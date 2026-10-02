@@ -29,7 +29,7 @@
 ```bash
 # 放置到目标机（默认监听 0.0.0.0:8002）
 cd 你的目录
-sudo bash install.sh linmeng_v1.1.0 linmeng-cli_v1.1.0
+sudo bash install.sh linmeng_版本号 linmeng-cli_版本号
 
 # 完成后需要调用指令补充shell_user
 linmeng 3 3
@@ -44,8 +44,8 @@ linmeng 3 3
 
 ```bash
 sudo mkdir -p /opt/linmeng
-sudo install -m 0755 linmeng_v1.0.0 /opt/linmeng/linmeng          # 程序本体
-sudo install -m 0755 linmeng-cli_v1.0.0 /usr/local/bin/linmeng     # 运维 CLI
+sudo install -m 0755 linmeng_版本号 /opt/linmeng/linmeng          # 程序本体
+sudo install -m 0755 linmeng-cli_版本号 /usr/local/bin/linmeng     # 运维 CLI
 sudo cp setting.json /opt/linmeng/setting.json
 sudo cp .env.example /opt/linmeng/.env.example
 sudo nano /opt/linmeng/.env  	#AUTH_PASSWORD=你的密码
