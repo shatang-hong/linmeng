@@ -132,4 +132,4 @@ linmeng/
 <p align="center">
   <img src="./images/2026-10-02.png" width="750" />
 </p>
-- v1.1.2终端页面预览
+- v1.1.0终端页面预览
