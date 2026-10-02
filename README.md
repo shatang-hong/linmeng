@@ -122,12 +122,14 @@ linmeng/
 - 4.项目的代码均为AI生成，但本说明文档为我本人手敲，因此可能介绍方面会有所欠缺，请见谅！对于项目本体，我只提供主要决策和技术选型，可能帮不上什么忙。
 - 5.命名来源：Linux资源监视器（Linux Resource Monitor）音译取“Lin”和“Mon”再通过发音润色得到“琳萌”，反向音译得到“linmeng”。
 
-  
+  ----
 <p align="center">
   <img src="./images/20260909_1.png" width="750" />
 </p>
 - v1.1.0监控主页预览
+
+----
 <p align="center">
-  <img src="./images/2026-09-18.png" width="750" />
+  <img src="./images/2026-10-02.png" width="750" />
 </p>
-- v1.1.0终端页面预览
+- v1.1.2终端页面预览
