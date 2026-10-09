@@ -1,11 +1,11 @@
 # 琳萌（Linmeng）· Linux 系统信息监视器
 
-琳萌 · linmeng 是一个简易轻量级局域网 Linux 系统信息监视器，拥有终端功能，用户通过浏览器即可实时查看被监视主机的系统运行与基础信息以及操作对应系统。核心实体：系统快照、指标项、监视器、会话、配置config。项目主要使用Go语言搭建，前端为内嵌的单页仪表盘，纯局域网、端口 8002，无数据库、极低资源占用。
+琳萌 · linmeng 是一个简易轻量级局域网 **Linux 系统信息监视器**，拥有**终端**和**快速传输文件**功能，用户通过浏览器即可实时查看被监视主机的系统运行与基础信息以及操作对应系统。核心实体：系统快照、指标项、监视器、会话、配置config。项目主要使用Go语言搭建，前端为内嵌的单页仪表盘，纯局域网、默认端口 8002，无数据库、极低资源占用。
 
 ## 特性
 
 - **单二进制部署**：Go 编译为单一静态二进制，零运行时依赖，低内存占用；systemd 管理，开箱即用。
-- **后台缓存采样**：后台循环采集缓存最新快照，HTTP 请求即时返回；重启后复用缓存实现秒开。
+- **后台缓存采样**：后台循环采集缓存最新快照，请求即时返回；重启后复用缓存实现秒开。
 - **浏览器仪表盘**：内嵌单页仪表盘（HTML/CSS/JS），有深浅双主题，响应式适配窄屏。
 - **覆盖系统资源**：主机、CPU、内存、磁盘、网络、GPU 与系统级指标（可见 [监视指标](#监视指标)）。
 - **运维命令行工具**：内置 `linmeng CLI`，数字菜单逐层操作，封装 systemctl / 日志 / 配置 / 回滚等日常运维，在终端使用命令 `linmeng` 即可调起运维工具。
@@ -14,7 +14,7 @@
 
 ## 工作原理
 
-前后端一体化单体架构：Go 进程托管内嵌仪表盘并对外提供 JSON 接口；系统信息只读采集，写入内存与快照缓存文件；浏览器每 `采集周期设定值`（默认 2 秒）发起一次 HTTP 轮询获取最新数据，前端据此更新指标与绘制曲线。
+前后端一体化单体架构：Go 进程托管内嵌仪表盘并对外提供 JSON 接口；系统信息只读采集，写入内存与快照缓存文件；浏览器每 `采集周期设定值`（默认 2 秒）发起一次轮询获取最新数据，前端据此更新指标与绘制曲线。
 
 ## 快速开始 · 部署
 
@@ -43,15 +43,13 @@ linmeng 3 3
 根据以下操作完成安装：
 
 ```bash
-sudo mkdir -p /opt/linmeng
-sudo install -m 0755 linmeng_版本号 /opt/linmeng/linmeng          # 程序本体
-sudo install -m 0755 linmeng-cli_版本号 /usr/local/bin/linmeng     # 运维 CLI
-sudo cp setting.json /opt/linmeng/setting.json
-sudo cp .env.example /opt/linmeng/.env.example
-sudo nano /opt/linmeng/.env  	#AUTH_PASSWORD=你的密码
+sudo mkdir -p /opt/linmeng && sudo install -m 0755 linmeng_版本号/opt/linmeng/linmeng
+sudo install -m 0755 linmeng-cli_版本号 /usr/local/bin/linmeng
+sudo mkdir -m 0700 /opt/linmeng/tls
+[ -f /opt/linmeng/setting.json ] || sudo cp setting.json /opt/linmeng/setting.json
+sudo bash -c 'umask 077; printf "AUTH_PASSWORD=%s\n" "你的强口令" > /opt/linmeng/.env'
 sudo cp linmeng.service /etc/systemd/system/linmeng.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now linmeng
+sudo systemctl daemon-reload && sudo systemctl enable --now linmeng
 同步添加终端用户名功能，见上方。
 ```
 
@@ -62,21 +60,21 @@ systemctl status linmeng --no-pager
 ss -tlnp | grep 8002
 curl -i http://127.0.0.1:8002/login
 curl -i http://127.0.0.1:8002/api/system/infolinmeng 7 1                                                
-# linmeng版本 → v1.1.0
-# CLI 版本 → v1.1.0
+# linmeng版本 → 你安装的版本
+# CLI 版本 → 你安装的版本
 ```
 
 
 ```bash
 # 4. 浏览器访问
-#    http://<主机局域网IP>:8002  →  输入密码（默认 admin123）登录
+#    http://<主机局域网IP>:你开放的端口  →  输入密码（默认 admin123）登录
 ```
 
 验证成功：登录后能查看各指标卡片，短期曲线随数据刷新。
 
 ## 快捷操作 · 运维 CLI
 
-通过关键字 `linmeng` 唤起命令行运维工具（独立二进制 `linmeng-cli`，安装为 `/usr/local/bin/linmeng`）。
+通过关键字 `linmeng` 唤起命令行运维工具（独立二进制 `linmeng-cli`，默认安装为 `/usr/local/bin/linmeng`）。
 
 ```bash
 linmeng          # 进入交互式数字菜单，逐层操作
@@ -116,7 +114,7 @@ linmeng/
 
 ## 其他
 
-- 1.仅限**局域网内**临时监测或验证原型使用，不设 HTTPS、不暴露公网。
+- 1.仅限**局域网内**临时监测或验证原型使用，HTTPS + WSS，不暴露公网。
 - 2.一次短历史仅保留在前端内存（`setting参数 - history_points` 个快照点，默认 20），用于绘制短期曲线。
 - 3.项目产生于我的实际需求，因此仅添加了我用的上的内容，没有做移动端适配。若有想添加的内容，可以下载源码并自行修改，希望本项目对你有帮助！
 - 4.项目的代码均为AI生成，但本说明文档为我本人手敲，因此可能介绍方面会有所欠缺，请见谅！对于项目本体，我只提供主要决策和技术选型，可能帮不上什么忙。
